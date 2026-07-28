@@ -180,30 +180,30 @@
             padding: 0 10px;
         }
 
-        /* Уведомление о стоимости (адаптивное: на смартфонах сброшено/встроено, на ПК — отдельная рамка) */
+        /* Рамка с напоминанием о стоимости (только для ПК) */
         .price-note {
-            display: none; /* По умолчанию скрыто на смартфонах */
+            display: none;
         }
 
         @media(min-width: 900px) {
             .price-note {
                 display: flex;
-                background: rgba(13, 17, 28, 0.75);
-                border: 1px solid rgba(139, 92, 246, 0.3);
-                border-radius: 20px;
-                padding: 20px 25px;
+                background: linear-gradient(145deg, rgba(13, 17, 28, 0.9), rgba(139, 92, 246, 0.08));
+                border: 1px solid rgba(139, 92, 246, 0.35);
+                border-radius: 16px;
+                padding: 18px 24px;
                 font-size: 0.95rem;
                 color: var(--text-muted);
-                margin-bottom: 40px;
+                margin-bottom: 50px;
                 align-items: center;
-                gap: 15px;
+                gap: 16px;
                 backdrop-filter: blur(12px);
                 -webkit-backdrop-filter: blur(12px);
-                box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
             }
             .price-note i {
                 color: var(--accent);
-                font-size: 1.4rem;
+                font-size: 1.3rem;
                 flex-shrink: 0;
             }
         }
@@ -535,7 +535,7 @@
             <button class="btn btn-primary" onclick="switchPage('contact')">Обсудить проект <i class="fa-solid fa-arrow-right"></i></button>
         </section>
 
-        <!-- Отдельная рамка с напоминанием о стоимости (только для ПК) -->
+        <!-- Рамка с напоминанием о стоимости (только для ПК) -->
         <div class="price-note">
             <i class="fa-solid fa-circle-info"></i>
             <span>Указанные цены являются базовыми. Итоговая стоимость может отличаться в зависимости от объема и сложности проекта.</span>
@@ -720,11 +720,13 @@
 
     <!-- Скрипты -->
     <script>
-        // Анимация живых обоев (Canvas)
+        // Анимация живых обоев (Canvas) с авто-движением для смартфонов
         const canvas = document.getElementById('interactive-bg');
         const ctx = canvas.getContext('2d');
         let particles = [];
         let mouse = { x: null, y: null, radius: 120 };
+        const isMobile = window.innerWidth < 900;
+        let autoAngle = 0;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -734,25 +736,31 @@
         resizeCanvas();
 
         window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            if (!isMobile) {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            }
         });
 
         window.addEventListener('touchmove', (e) => {
-            if(e.touches.length > 0) {
+            if(e.touches.length > 0 && !isMobile) {
                 mouse.x = e.touches[0].clientX;
                 mouse.y = e.touches[0].clientY;
             }
         });
 
         window.addEventListener('touchend', () => {
-            mouse.x = null;
-            mouse.y = null;
+            if (!isMobile) {
+                mouse.x = null;
+                mouse.y = null;
+            }
         });
 
         window.addEventListener('mouseout', () => {
-            mouse.x = null;
-            mouse.y = null;
+            if (!isMobile) {
+                mouse.x = null;
+                mouse.y = null;
+            }
         });
 
         class Particle {
@@ -762,6 +770,8 @@
                 this.size = Math.random() * 2 + 1;
                 this.baseX = this.x;
                 this.baseY = this.y;
+                this.vx = (Math.random() - 0.5) * 0.6;
+                this.vy = (Math.random() - 0.5) * 0.6;
                 this.color = Math.random() > 0.5 ? '#8b5cf6' : '#00f0ff';
             }
             draw() {
@@ -772,22 +782,36 @@
                 ctx.fill();
             }
             update() {
-                if (mouse.x !== null && mouse.y !== null) {
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < mouse.radius) {
-                        let force = (mouse.radius - distance) / mouse.radius;
-                        let directionX = dx / distance;
-                        let directionY = dy / distance;
-                        this.x -= directionX * force * 4;
-                        this.y -= directionY * force * 4;
-                    } else {
-                        if (this.x !== this.baseX) {
-                            this.x -= (this.x - this.baseX) / 20;
-                        }
-                        if (this.y !== this.baseY) {
-                            this.y -= (this.y - this.baseY) / 20;
+                if (isMobile) {
+                    // Плавное автономное движение и покачивание для смартфонов
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Мягкий отскок от границ экрана
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+                    // Добавляем волновой эффект от центра для красоты
+                    this.y += Math.sin(autoAngle + this.baseX) * 0.3;
+                } else {
+                    // Режим ПК (реагирует на мышь)
+                    if (mouse.x !== null && mouse.y !== null) {
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < mouse.radius) {
+                            let force = (mouse.radius - distance) / mouse.radius;
+                            let directionX = dx / distance;
+                            let directionY = dy / distance;
+                            this.x -= directionX * force * 4;
+                            this.y -= directionY * force * 4;
+                        } else {
+                            if (this.x !== this.baseX) {
+                                this.x -= (this.x - this.baseX) / 20;
+                            }
+                            if (this.y !== this.baseY) {
+                                this.y -= (this.y - this.baseY) / 20;
+                            }
                         }
                     }
                 }
@@ -805,6 +829,7 @@
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            autoAngle += 0.03;
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
