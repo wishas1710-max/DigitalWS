@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitalStudio — Премиальная разработка сайтов и ботов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #05070b;
+            --card-bg: rgba(13, 17, 28, 0.75);
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --accent: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Интерактивный Canvas для живых обоев с мышкой */
+        #interactive-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Шапка */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(5, 7, 11, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-main), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Управление страницами */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 140px 20px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Главный экран */
+        .hero {
+            text-align: center;
+            padding: 60px 0 90px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #d8b4fe;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.2rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.15;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 36px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6d28d9);
+            color: white;
+            box-shadow: 0 10px 30px -5px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 240, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Заголовки */
+        .section-header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        /* Сетки карточек */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+        }
+
+        .card h3 i {
+            color: var(--accent);
+        }
+
+        .card ul {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .card ul li {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .card ul li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .card.featured {
+            background: linear-gradient(145deg, rgba(13, 17, 28, 0.95), rgba(139, 92, 246, 0.15));
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        /* Контакты и форма */
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .contact-card, .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 35px;
+            backdrop-filter: blur(15px);
+        }
+
+        .contact-card h2, .form-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .contact-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .tg-btn-large {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 20px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: #fff;
+            transition: var(--transition);
+        }
+
+        .tg-btn-large:hover {
+            border-color: var(--accent);
+            background: rgba(0, 240, 255, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .tg-btn-large i {
+            font-size: 2.2rem;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+        }
+
+        .form-group select option {
+            background: #0d111c;
+            color: #fff;
+        }
+
+        .success-banner {
+            display: none;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        @media(max-width: 768px) {
+            .contact-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Интерактивный Canvas для анимированных живых обоев с мышкой -->
+    <canvas id="interactive-bg"></canvas>
+
+    <!-- Шапка -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="switchPage('home')">
+                <i class="fa-solid fa-cube"></i> DigitalStudio
+            </a>
+            <ul class="nav-links">
+                <li><a href="#" onclick="switchPage('home')" id="nav-home" class="active">Услуги</a></li>
+                <li><a href="#" onclick="switchPage('contact')" id="nav-contact">Связаться / Заявка</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- СТРАНИЦА 1 -->
+    <div id="page-home" class="page active">
+        <section class="hero">
+            <div class="badge"><i class="fa-solid fa-sparkles"></i> Премиум веб-разработка</div>
+            <h1>Создаем цифровые продукты, от которых <span>в восторге клиенты</span></h1>
+            <p>Высококонверсионные лендинги и умные боты под ключ. Опережайте конкурентов с эксклюзивным дизайном.</p>
+            <button class="btn btn-primary" onclick="switchPage('contact')">Обсудить проект <i class="fa-solid fa-arrow-right"></i></button>
+        </section>
+
+        <!-- Лендинги -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-laptop-code"></i> Лендинги для бизнеса и проектов</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-store"></i> Направления под ключ</h3>
+                    <ul>
+                        <li>Кофейни, рестораны, кафе, бары</li>
+                        <li>Игры (инди-проекты, серверы, приложения)</li>
+                        <li>Telegram-каналы и авторские блоги</li>
+                        <li>Услуги (ремонт, стройка, автосервисы)</li>
+                        <li>Товарный бизнес / интернет-магазины</li>
+                        <li>Реализуем любую вашу идею</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 7 000 ₽</span>
+                    <button class="btn btn-outline" onclick="selectAndGo('Лендинг (от 7 000 ₽)')">Заказать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Телеграм-боты -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-brands fa-telegram"></i> Телеграм-боты</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-bell"></i> Бот-уведомитель</h3>
+                    <ul>
+                        <li>Мгновенная отправка заявок с вашего сайта прямо в личный чат, группу или рабочий канал.</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 1 000 ₽</span>
+                    <button class="btn btn-outline" onclick="selectAndGo('Бот-уведомитель')">Заказать</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-robot"></i> Бот-консультант</h3>
+                    <ul>
+                        <li>Авто-ответы на частые вопросы (прайс, график)</li>
+                        <li>Интерактивное меню и сбор контактов</li>
+                        <li>Бесшовная передача диалога менеджеру</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 3 000 ₽</span>
+                    <button class="btn btn-outline" onclick="selectAndGo('Бот-консультант (FAQ)')">Заказать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Оформление -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-palette"></i> Оформление сообществ и каналов</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div>
+                    <h3><i class="fa-brands fa-vk"></i> Группа ВКонтакте</h3>
+                    <ul>
+                        <li>Дизайн-концепция, обложка (статичная/живая), аватар, меню и виджеты</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 1 500 ₽</span>
+                    <button class="btn btn-outline" onclick="selectAndGo('Оформление ВК')">Заказать</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3><i class="fa-brands fa-discord"></i> Сервер Discord</h3>
+                    <ul>
+                        <li>Структура каналов, настройка ролей, установка ботов, иконка и баннер</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 2 000 ₽</span>
+                    <button class="btn btn-outline" onclick="selectAndGo('Оформление Discord')">Заказать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пакеты -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-box-archive"></i> Комплексные пакеты «Под ключ»</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div>
+                    <h3>Базовый пакет</h3>
+                    <ul>
+                        <li>Лендинг с уникальным дизайном + бот-уведомитель или FAQ-бот</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 18 000 ₽</span>
+                    <button class="btn btn-outline" onclick="selectAndGo('Пакет Базовый')">Выбрать</button>
+                </div>
+            </div>
+
+            <div class="card featured">
+                <div>
+                    <h3>Пакет «Стандарт»</h3>
+                    <ul>
+                        <li>Продающий лендинг + бот с каталогом, корзиной, оплатой и связкой с сайтом</li>
+                    </ul>
+                </div>
+                <div class="price-row">
+                    <span class="price">от 30 000 ₽</span>
+                    <button class="btn btn-primary" onclick="selectAndGo('Пакет Стандарт')">Выбрать пакет</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА 2: ЗАЯВКА -->
+    <div id="page-contact" class="page">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-regular fa-paper-plane"></i> Контакты и заказ</h2>
+        </div>
+        
+        <div class="contact-layout">
+            <div class="contact-card">
+                <h2>Прямая связь</h2>
+                <p>Напишите мне в Telegram напрямую для быстрой консультации.</p>
+                <a href="https://t.me/ваш_username" target="_blank" class="tg-btn-large">
+                    <i class="fa-brands fa-telegram"></i>
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Telegram Messenger</div>
+                        <div style="font-size: 1.1rem; font-weight: 700;">@ваш_username</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="form-card">
+                <h2>Отправить заявку</h2>
+                <form id="mainOrderForm" onsubmit="submitForm(event)">
+                    <div class="form-group">
+                        <label>Выбранная услуга / пакет</label>
+                        <select id="targetService">
+                            <option value="Лендинг">Лендинг (от 7 000 ₽)</option>
+                            <option value="Бот-уведомитель">Бот-уведомитель (от 1 000 ₽)</option>
+                            <option value="Бот-консультант">Бот-консультант (от 3 000 ₽)</option>
+                            <option value="Оформление ВК">Оформление ВК (от 1 500 ₽)</option>
+                            <option value="Оформление Discord">Оформление Discord (от 2 000 ₽)</option>
+                            <option value="Пакет Базовый">Пакет «Базовый» (от 18 000 ₽)</option>
+                            <option value="Пакет Стандарт">Пакет «Стандарт» (от 30 000 ₽)</option>
+                            <option value="Индивидуальный проект">Другая задача</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ваше имя</label>
+                        <input type="text" id="clientName" required placeholder="Иван">
+                    </div>
+                    <div class="form-group">
+                        <label>Telegram или Телефон</label>
+                        <input type="text" id="clientContact" required placeholder="@username или +7...">
+                    </div>
+                    <div class="form-group">
+                        <label>Комментарий</label>
+                        <textarea id="clientComment" rows="3" placeholder="Описание задачи..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Отправить заявку</button>
+                    <div id="successBanner" class="success-banner">Заявка успешно отправлена в бот!</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты: Интерактивный фон мышки + Логика -->
+    <script>
+        // Анимация живых обоев с мышкой (Canvas)
+        const canvas = document.getElementById('interactive-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 1;
+                this.color = Math.random() > 0.5 ? '#8b5cf6' : '#00f0ff';
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            update() {
+                if (mouse.x !== null && mouse.y !== null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouse.radius) {
+                        let force = (mouse.radius - distance) / mouse.radius;
+                        let directionX = dx / distance;
+                        let directionY = dy / distance;
+                        this.x -= directionX * force * 5;
+                        this.y -= directionY * force * 5;
+                    } else {
+                        if (this.x !== this.baseX) {
+                            let dx = this.x - this.baseX;
+                            this.x -= dx / 20;
+                        }
+                        if (this.y !== this.baseY) {
+                            let dy = this.y - this.baseY;
+                            this.y -= dy / 20;
+                        }
+                    }
+                }
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            let count = (canvas.width * canvas.height) / 9000;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Управление страницами
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            if(pageId === 'home') document.getElementById('nav-home').classList.add('active');
+            if(pageId === 'contact') document.getElementById('nav-contact').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectAndGo(serviceName) {
+            switchPage('contact');
+            const select = document.getElementById('targetService');
+            for(let option of select.options) {
+                if(option.text.includes(serviceName) || option.value === serviceName) {
+                    select.value = option.value;
+                    break;
+                }
+            }
+        }
+
+        // Отправка данных на ваш Python бэкенд
+        async function submitForm(event) {
+            event.preventDefault();
+            const service = document.getElementById('targetService').value;
+            const name = document.getElementById('clientName').value;
+            const contact = document.getElementById('clientContact').value;
+            const comment = document.getElementById('clientComment').value;
+
+            try {
+                let response = await fetch('http://127.0.0.1:5000/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ service, name, contact, comment })
+                });
+
+                if (response.ok) {
+                    const banner = document.getElementById('successBanner');
+                    banner.style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('mainOrderForm').reset();
+                        banner.style.display = 'none';
+                    }, 4000);
+                } else {
+                    alert('Ошибка отправки. Проверьте запущен ли Python-сервер.');
+                }
+            } catch (error) {
+                alert('Не удалось связаться с сервером бэкенда.');
+            }
+        }
+    </script>
+</body>
+</html>
