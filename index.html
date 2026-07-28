@@ -180,33 +180,28 @@
             padding: 0 10px;
         }
 
-        /* Рамка с напоминанием о стоимости (только для ПК) */
+        /* Рамка с напоминанием о стоимости (единая для ПК и смартфонов) */
         .price-note {
-            display: none;
+            display: flex;
+            background: linear-gradient(145deg, rgba(13, 17, 28, 0.9), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin: 0 auto 50px auto;
+            max-width: 750px;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
         }
 
-        @media(min-width: 900px) {
-            .price-note {
-                display: flex;
-                background: linear-gradient(145deg, rgba(13, 17, 28, 0.9), rgba(139, 92, 246, 0.08));
-                border: 1px solid rgba(139, 92, 246, 0.35);
-                border-radius: 16px;
-                padding: 16px 20px;
-                font-size: 0.95rem;
-                color: var(--text-muted);
-                margin: 0 auto 50px auto;
-                max-width: 750px;
-                align-items: center;
-                gap: 16px;
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
-            }
-            .price-note i {
-                color: var(--accent);
-                font-size: 1.3rem;
-                flex-shrink: 0;
-            }
+        .price-note i {
+            color: var(--accent);
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
         /* Кнопки */
@@ -536,7 +531,7 @@
             <button class="btn btn-primary" onclick="switchPage('contact')">Обсудить проект <i class="fa-solid fa-arrow-right"></i></button>
         </section>
 
-        <!-- Рамка с напоминанием о стоимости (только для ПК) -->
+        <!-- Рамка с напоминанием о стоимости (на ПК и смартфонах) -->
         <div class="price-note">
             <i class="fa-solid fa-circle-info"></i>
             <span>Указанные цены являются базовыми. Итоговая стоимость может отличаться в зависимости от объема и сложности проекта.</span>
@@ -819,7 +814,7 @@
             }
         }
 
-        function initParticles() {
+        function init`__`particles() {
             particles = [];
             let count = (canvas.width * canvas.height) / 11000;
             for (let i = 0; i < count; i++) {
