@@ -180,28 +180,32 @@
             padding: 0 10px;
         }
 
-        /* Уведомление о стоимости */
+        /* Уведомление о стоимости (адаптивное: на смартфонах сброшено/встроено, на ПК — отдельная рамка) */
         .price-note {
-            background: rgba(139, 92, 246, 0.08);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-            border-radius: 14px;
-            padding: 14px 20px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-align: left;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            display: none; /* По умолчанию скрыто на смартфонах */
         }
 
-        .price-note i {
-            color: var(--accent);
-            font-size: 1.2rem;
-            flex-shrink: 0;
+        @media(min-width: 900px) {
+            .price-note {
+                display: flex;
+                background: rgba(13, 17, 28, 0.75);
+                border: 1px solid rgba(139, 92, 246, 0.3);
+                border-radius: 20px;
+                padding: 20px 25px;
+                font-size: 0.95rem;
+                color: var(--text-muted);
+                margin-bottom: 40px;
+                align-items: center;
+                gap: 15px;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            }
+            .price-note i {
+                color: var(--accent);
+                font-size: 1.4rem;
+                flex-shrink: 0;
+            }
         }
 
         /* Кнопки */
@@ -531,7 +535,7 @@
             <button class="btn btn-primary" onclick="switchPage('contact')">Обсудить проект <i class="fa-solid fa-arrow-right"></i></button>
         </section>
 
-        <!-- Уведомление о стоимости (между баннером и лендингами) -->
+        <!-- Отдельная рамка с напоминанием о стоимости (только для ПК) -->
         <div class="price-note">
             <i class="fa-solid fa-circle-info"></i>
             <span>Указанные цены являются базовыми. Итоговая стоимость может отличаться в зависимости от объема и сложности проекта.</span>
