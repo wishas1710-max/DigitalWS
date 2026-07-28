@@ -25,6 +25,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -35,7 +36,7 @@
             line-height: 1.6;
         }
 
-        /* Интерактивный Canvas для живых обоев с мышкой */
+        /* Интерактивный Canvas для живых обоев */
         #interactive-bg {
             position: fixed;
             top: 0;
@@ -53,8 +54,9 @@
             left: 0;
             width: 100%;
             z-index: 100;
-            background: rgba(5, 7, 11, 0.8);
+            background: rgba(5, 7, 11, 0.85);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -64,11 +66,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 24px;
+            padding: 16px 20px;
         }
 
         .logo {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--text-main), var(--accent));
             -webkit-background-clip: text;
@@ -81,11 +83,12 @@
 
         .logo i {
             color: var(--accent);
+            -webkit-text-fill-color: var(--accent);
         }
 
         .nav-links {
             display: flex;
-            gap: 28px;
+            gap: 24px;
             list-style: none;
             align-items: center;
         }
@@ -122,7 +125,7 @@
         .page {
             display: none;
             min-height: 100vh;
-            padding: 140px 20px 80px;
+            padding: 120px 16px 60px;
             max-width: 1200px;
             margin: 0 auto;
             opacity: 0;
@@ -139,28 +142,28 @@
         /* Главный экран */
         .hero {
             text-align: center;
-            padding: 60px 0 90px;
+            padding: 40px 0 60px;
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: rgba(139, 92, 246, 0.1);
             border: 1px solid rgba(139, 92, 246, 0.3);
             border-radius: 30px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #d8b4fe;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4.2rem);
+            font-size: clamp(2.1rem, 5vw, 4.2rem);
             font-weight: 800;
-            margin-bottom: 20px;
-            line-height: 1.15;
+            margin-bottom: 16px;
+            line-height: 1.2;
         }
 
         .hero h1 span {
@@ -170,18 +173,44 @@
         }
 
         .hero p {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             color: var(--text-muted);
             max-width: 700px;
-            margin: 0 auto 36px;
+            margin: 0 auto 30px;
+            padding: 0 10px;
+        }
+
+        /* Уведомление о стоимости */
+        .price-note {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 14px;
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .price-note i {
+            color: var(--accent);
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
 
         /* Кнопки */
         .btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
-            padding: 14px 32px;
+            padding: 14px 28px;
             font-size: 1rem;
             font-weight: 600;
             border-radius: 40px;
@@ -189,6 +218,15 @@
             text-decoration: none;
             transition: var(--transition);
             border: none;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        @media(min-width: 600px) {
+            .btn {
+                width: auto;
+                max-width: none;
+            }
         }
 
         .btn-primary {
@@ -207,6 +245,8 @@
             color: var(--text-main);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 100%;
         }
 
         .btn-outline:hover {
@@ -218,17 +258,17 @@
 
         /* Заголовки */
         .section-header {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
+            padding-bottom: 12px;
         }
 
         .section-title {
-            font-size: 1.6rem;
+            font-size: 1.35rem;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .section-title i {
@@ -238,35 +278,50 @@
         /* Сетки карточек */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 60px;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media(min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 24px;
+                margin-bottom: 60px;
+            }
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 30px;
+            padding: 24px;
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             transition: var(--transition);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
+        @media(min-width: 768px) {
+            .card {
+                padding: 30px;
+            }
+        }
+
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             border-color: rgba(0, 240, 255, 0.4);
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
         }
 
         .card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 16px;
+            font-size: 1.15rem;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             color: #fff;
         }
 
@@ -276,13 +331,13 @@
 
         .card ul {
             list-style: none;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .card ul li {
             color: var(--text-muted);
-            margin-bottom: 10px;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
             position: relative;
             padding-left: 18px;
         }
@@ -292,20 +347,31 @@
             position: absolute;
             left: 0;
             color: var(--primary);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .price-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
+            flex-direction: column;
+            gap: 14px;
+            padding-top: 16px;
             border-top: 1px solid var(--border-color);
             margin-top: auto;
         }
 
+        @media(min-width: 480px) {
+            .price-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .price-row .btn-outline {
+                width: auto;
+            }
+        }
+
         .price {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: var(--accent);
         }
@@ -315,40 +381,64 @@
             border-color: rgba(139, 92, 246, 0.5);
         }
 
+        .card.featured .btn-primary {
+            width: 100%;
+        }
+
+        @media(min-width: 480px) {
+            .card.featured .btn-primary {
+                width: auto;
+            }
+        }
+
         /* Контакты и форма */
         .contact-layout {
             display: grid;
-            grid-template-columns: 1fr 1.3fr;
-            gap: 30px;
+            grid-template-columns: 1fr;
+            gap: 20px;
             align-items: start;
+        }
+
+        @media(min-width: 900px) {
+            .contact-layout {
+                grid-template-columns: 1fr 1.3fr;
+                gap: 30px;
+            }
         }
 
         .contact-card, .form-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 35px;
+            padding: 24px;
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        @media(min-width: 768px) {
+            .contact-card, .form-card {
+                padding: 35px;
+            }
         }
 
         .contact-card h2, .form-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+            font-size: 1.35rem;
+            margin-bottom: 12px;
         }
 
         .contact-card p {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 30px;
+            font-size: 0.92rem;
+            margin-bottom: 24px;
         }
 
         .tg-btn-large {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 16px;
             background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(139, 92, 246, 0.08));
             border: 1px solid rgba(0, 240, 255, 0.3);
-            padding: 20px;
+            padding: 16px;
             border-radius: 16px;
             text-decoration: none;
             color: #fff;
@@ -358,34 +448,34 @@
         .tg-btn-large:hover {
             border-color: var(--accent);
             background: rgba(0, 240, 255, 0.15);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .tg-btn-large i {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: var(--accent);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
+            margin-bottom: 6px;
+            font-size: 0.82rem;
             color: var(--text-muted);
         }
 
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
-            padding: 14px 18px;
+            padding: 12px 16px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             color: var(--text-main);
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 1rem;
             outline: none;
             transition: var(--transition);
         }
@@ -405,21 +495,18 @@
             background: rgba(16, 185, 129, 0.12);
             border: 1px solid rgba(16, 185, 129, 0.4);
             color: #34d399;
-            padding: 16px;
+            padding: 14px;
             border-radius: 12px;
             text-align: center;
             font-weight: 500;
-            margin-top: 20px;
-        }
-
-        @media(max-width: 768px) {
-            .contact-layout { grid-template-columns: 1fr; }
+            margin-top: 16px;
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
 
-    <!-- Интерактивный Canvas для анимированных живых обоев с мышкой -->
+    <!-- Интерактивный Canvas для анимированных живых обоев -->
     <canvas id="interactive-bg"></canvas>
 
     <!-- Шапка -->
@@ -430,7 +517,7 @@
             </a>
             <ul class="nav-links">
                 <li><a href="#" onclick="switchPage('home')" id="nav-home" class="active">Услуги</a></li>
-                <li><a href="#" onclick="switchPage('contact')" id="nav-contact">Связаться / Заявка</a></li>
+                <li><a href="#" onclick="switchPage('contact')" id="nav-contact">Заявка</a></li>
             </ul>
         </div>
     </header>
@@ -441,6 +528,13 @@
             <div class="badge"><i class="fa-solid fa-sparkles"></i> Премиум веб-разработка</div>
             <h1>Создаем цифровые продукты, от которых <span>в восторге клиенты</span></h1>
             <p>Высококонверсионные лендинги и умные боты под ключ. Опережайте конкурентов с эксклюзивным дизайном.</p>
+            
+            <!-- Уведомление о стоимости -->
+            <div class="price-note">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Указанные цены являются базовыми. Итоговая стоимость может отличаться в зависимости от объема и сложности проекта.</span>
+            </div>
+
             <button class="btn btn-primary" onclick="switchPage('contact')">Обсудить проект <i class="fa-solid fa-arrow-right"></i></button>
         </section>
 
@@ -577,11 +671,11 @@
             <div class="contact-card">
                 <h2>Прямая связь</h2>
                 <p>Напишите мне в Telegram напрямую для быстрой консультации.</p>
-                <a href="https://t.me/Maespan" target="_blank" class="tg-btn-large">
+                <a href="https://t.me/maespan" target="_blank" class="tg-btn-large">
                     <i class="fa-brands fa-telegram"></i>
                     <div>
-                        <div style="font-size: 0.85rem; color: var(--text-muted);">Telegram Messenger</div>
-                        <div style="font-size: 1.1rem; font-weight: 700;">@Maespan</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Telegram Messenger</div>
+                        <div style="font-size: 1.05rem; font-weight: 700;">@maespan</div>
                     </div>
                 </a>
             </div>
@@ -614,20 +708,20 @@
                         <label>Комментарий</label>
                         <textarea id="clientComment" rows="3" placeholder="Описание задачи..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Отправить заявку</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; max-width: none; justify-content: center;">Отправить заявку</button>
                     <div id="successBanner" class="success-banner">Заявка успешно отправлена в бот!</div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Скрипты: Интерактивный фон мышки + Логика -->
+    <!-- Скрипты -->
     <script>
-        // Анимация живых обоев с мышкой (Canvas)
+        // Анимация живых обоев (Canvas)
         const canvas = document.getElementById('interactive-bg');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let mouse = { x: null, y: null, radius: 150 };
+        let mouse = { x: null, y: null, radius: 120 };
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -639,6 +733,18 @@
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if(e.touches.length > 0) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            mouse.x = null;
+            mouse.y = null;
         });
 
         window.addEventListener('mouseout', () => {
@@ -653,7 +759,6 @@
                 this.size = Math.random() * 2 + 1;
                 this.baseX = this.x;
                 this.baseY = this.y;
-                this.density = (Math.random() * 30) + 1;
                 this.color = Math.random() > 0.5 ? '#8b5cf6' : '#00f0ff';
             }
             draw() {
@@ -672,16 +777,14 @@
                         let force = (mouse.radius - distance) / mouse.radius;
                         let directionX = dx / distance;
                         let directionY = dy / distance;
-                        this.x -= directionX * force * 5;
-                        this.y -= directionY * force * 5;
+                        this.x -= directionX * force * 4;
+                        this.y -= directionY * force * 4;
                     } else {
                         if (this.x !== this.baseX) {
-                            let dx = this.x - this.baseX;
-                            this.x -= dx / 20;
+                            this.x -= (this.x - this.baseX) / 20;
                         }
                         if (this.y !== this.baseY) {
-                            let dy = this.y - this.baseY;
-                            this.y -= dy / 20;
+                            this.y -= (this.y - this.baseY) / 20;
                         }
                     }
                 }
@@ -690,7 +793,7 @@
 
         function initParticles() {
             particles = [];
-            let count = (canvas.width * canvas.height) / 9000;
+            let count = (canvas.width * canvas.height) / 11000;
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle());
             }
