@@ -577,11 +577,11 @@
             <div class="contact-card">
                 <h2>Прямая связь</h2>
                 <p>Напишите мне в Telegram напрямую для быстрой консультации.</p>
-                <a href="https://t.me/ваш_username" target="_blank" class="tg-btn-large">
+                <a href="https://t.me/Maespan" target="_blank" class="tg-btn-large">
                     <i class="fa-brands fa-telegram"></i>
                     <div>
                         <div style="font-size: 0.85rem; color: var(--text-muted);">Telegram Messenger</div>
-                        <div style="font-size: 1.1rem; font-weight: 700;">@ваш_username</div>
+                        <div style="font-size: 1.1rem; font-weight: 700;">@Maespan</div>
                     </div>
                 </a>
             </div>
@@ -728,7 +728,7 @@
             }
         }
 
-        // Отправка данных на ваш Python бэкенд
+        // Прямая отправка данных в Telegram-бот
         async function submitForm(event) {
             event.preventDefault();
             const service = document.getElementById('targetService').value;
@@ -736,11 +736,20 @@
             const contact = document.getElementById('clientContact').value;
             const comment = document.getElementById('clientComment').value;
 
+            const BOT_TOKEN = "8717286736:AAEJMk57rXGCf8Em_IzkKLlputNZZ_ZcRAU";
+            const CHAT_ID = "-1003953924346";
+
+            const text = `🚨 <b>Новая заявка с сайта!</b>\n\n🛠 <b>Услуга:</b> ${service}\n👤 <b>Имя:</b> ${name}\n📞 <b>Контакт:</b> ${contact}\n💬 <b>Комментарий:</b> ${comment || 'Нет'}`;
+
             try {
-                let response = await fetch('http://127.0.0.1:5000/api/order', {
+                let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ service, name, contact, comment })
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: text,
+                        parse_mode: 'HTML'
+                    })
                 });
 
                 if (response.ok) {
@@ -751,10 +760,10 @@
                         banner.style.display = 'none';
                     }, 4000);
                 } else {
-                    alert('Ошибка отправки. Проверьте запущен ли Python-сервер.');
+                    alert('Ошибка отправки в Telegram. Проверьте настройки бота и права в чате.');
                 }
             } catch (error) {
-                alert('Не удалось связаться с сервером бэкенда.');
+                alert('Не удалось связаться с сервером Telegram.');
             }
         }
     </script>
