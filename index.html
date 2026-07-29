@@ -36,7 +36,7 @@
             line-height: 1.6;
         }
 
-        /* Интерактивный Canvas для живых обоев (pointer-events: none возвращен, чтобы не блокировать клики) */
+        /* Интерактивный Canvas для живых обоев */
         #interactive-bg {
             position: fixed;
             top: 0;
@@ -718,6 +718,22 @@
 
     <!-- Скрипты -->
     <script>
+        // Автоматический перезапуск (обновление) страницы каждые сутки (24 часа)
+        (function checkDailyReload() {
+            const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+            const now = Date.now();
+            const lastReload = localStorage.getItem('site_last_reload');
+
+            if (!lastReload) {
+                // Первый запуск — сохраняем метку времени
+                localStorage.setItem('site_last_reload', now);
+            } else if (now - parseInt(lastReload) >= ONE_DAY_MS) {
+                // Прошло 24 часа — обновляем метку и перезагружаем страницу
+                localStorage.setItem('site_last_reload', now);
+                window.location.reload(true);
+            }
+        })();
+
         // Интерактивные живые обои (Canvas)
         const canvas = document.getElementById('interactive-bg');
         const ctx = canvas.getContext('2d');
@@ -834,7 +850,7 @@
         }
         animateParticles();
 
-        // Управление страницами (исправлено переключение)
+        // Управление страницами
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => {
                 p.classList.remove('active');
