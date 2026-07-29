@@ -36,7 +36,7 @@
             line-height: 1.6;
         }
 
-        /* Интерактивный Canvas для живых обоев */
+        /* Интерактивный Canvas для живых обоев (pointer-events: none возвращен, чтобы не блокировать клики) */
         #interactive-bg {
             position: fixed;
             top: 0;
@@ -79,6 +79,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
 
         .logo i {
@@ -100,6 +101,7 @@
             font-weight: 500;
             transition: var(--transition);
             position: relative;
+            cursor: pointer;
         }
 
         .nav-links a::after {
@@ -180,7 +182,7 @@
             padding: 0 10px;
         }
 
-        /* Рамка с напоминанием о стоимости (единая для ПК и смартфонов) */
+        /* Рамка с напоминанием о стоимости */
         .price-note {
             display: flex;
             background: linear-gradient(145deg, rgba(13, 17, 28, 0.9), rgba(139, 92, 246, 0.08));
@@ -506,18 +508,18 @@
 </head>
 <body>
 
-    <!-- Интерактивный Canvas для анимированных живых обоев -->
+    <!-- Интерактивный Canvas для живых обоев -->
     <canvas id="interactive-bg"></canvas>
 
     <!-- Шапка -->
     <header>
         <div class="nav-container">
-            <a href="#" class="logo" onclick="switchPage('home')">
+            <a class="logo" onclick="switchPage('home')">
                 <i class="fa-solid fa-cube"></i> DigitalStudio
             </a>
             <ul class="nav-links">
-                <li><a href="#" onclick="switchPage('home')" id="nav-home" class="active">Услуги</a></li>
-                <li><a href="#" onclick="switchPage('contact')" id="nav-contact">Заявка</a></li>
+                <li><a onclick="switchPage('home')" id="nav-home" class="active">Услуги</a></li>
+                <li><a onclick="switchPage('contact')" id="nav-contact">Заявка</a></li>
             </ul>
         </div>
     </header>
@@ -531,7 +533,7 @@
             <button class="btn btn-primary" onclick="switchPage('contact')">Обсудить проект <i class="fa-solid fa-arrow-right"></i></button>
         </section>
 
-        <!-- Рамка с напоминанием о стоимости (на ПК и смартфонах) -->
+        <!-- Рамка с напоминанием о стоимости -->
         <div class="price-note">
             <i class="fa-solid fa-circle-info"></i>
             <span>Указанные цены являются базовыми. Итоговая стоимость может отличаться в зависимости от объема и сложности проекта.</span>
@@ -556,7 +558,7 @@
                 </div>
                 <div class="price-row">
                     <span class="price">от 7 000 ₽</span>
-                    <button class="btn btn-outline" onclick="selectAndGo('Лендинг (от 7 000 ₽)')">Заказать</button>
+                    <button class="btn btn-outline" onclick="selectAndGo('Лендинг')">Заказать</button>
                 </div>
             </div>
         </div>
@@ -590,7 +592,7 @@
                 </div>
                 <div class="price-row">
                     <span class="price">от 3 000 ₽</span>
-                    <button class="btn btn-outline" onclick="selectAndGo('Бот-консультант (FAQ)')">Заказать</button>
+                    <button class="btn btn-outline" onclick="selectAndGo('Бот-консультант')">Заказать</button>
                 </div>
             </div>
         </div>
@@ -716,48 +718,45 @@
 
     <!-- Скрипты -->
     <script>
-        // Анимация живых обоев (Canvas) с авто-движением для смартфонов
+        // Интерактивные живые обои (Canvas)
         const canvas = document.getElementById('interactive-bg');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        let mouse = { x: null, y: null, radius: 120 };
-        const isMobile = window.innerWidth < 900;
-        let autoAngle = 0;
+        let particlesArray = [];
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 150
+        };
+
+        window.addEventListener('mousemove', function(event) {
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
+        });
+
+        window.addEventListener('mouseout', function() {
+            mouse.x = undefined;
+            mouse.y = undefined;
+        });
+
+        window.addEventListener('touchmove', function(event) {
+            if (event.touches.length > 0) {
+                mouse.x = event.touches[0].clientX;
+                mouse.y = event.touches[0].clientY;
+            }
+        });
+
+        window.addEventListener('touchend', function() {
+            mouse.x = undefined;
+            mouse.y = undefined;
+        });
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
+
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
-        window.addEventListener('mousemove', (e) => {
-            if (!isMobile) {
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
-            }
-        });
-
-        window.addEventListener('touchmove', (e) => {
-            if(e.touches.length > 0 && !isMobile) {
-                mouse.x = e.touches[0].clientX;
-                mouse.y = e.touches[0].clientY;
-            }
-        });
-
-        window.addEventListener('touchend', () => {
-            if (!isMobile) {
-                mouse.x = null;
-                mouse.y = null;
-            }
-        });
-
-        window.addEventListener('mouseout', () => {
-            if (!isMobile) {
-                mouse.x = null;
-                mouse.y = null;
-            }
-        });
 
         class Particle {
             constructor() {
@@ -766,10 +765,10 @@
                 this.size = Math.random() * 2 + 1;
                 this.baseX = this.x;
                 this.baseY = this.y;
-                this.vx = (Math.random() - 0.5) * 0.6;
-                this.vy = (Math.random() - 0.5) * 0.6;
+                this.density = (Math.random() * 30) + 1;
                 this.color = Math.random() > 0.5 ? '#8b5cf6' : '#00f0ff';
             }
+
             draw() {
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
@@ -777,85 +776,103 @@
                 ctx.closePath();
                 ctx.fill();
             }
+
             update() {
-                if (isMobile) {
-                    // Плавное автономное движение и покачивание для смартфонов
-                    this.x += this.vx;
-                    this.y += this.vy;
+                if (mouse.x !== undefined && mouse.y !== undefined) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let maxDistance = mouse.radius;
+                    let force = (maxDistance - distance) / maxDistance;
+                    let directionX = forceDirectionX * force * this.density;
+                    let directionY = forceDirectionY * force * this.density;
 
-                    // Мягкий отскок от границ экрана
-                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-
-                    // Добавляем волновой эффект от центра для красоты
-                    this.y += Math.sin(autoAngle + this.baseX) * 0.3;
-                } else {
-                    // Режим ПК (реагирует на мышь)
-                    if (mouse.x !== null && mouse.y !== null) {
-                        let dx = mouse.x - this.x;
-                        let dy = mouse.y - this.y;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < mouse.radius) {
-                            let force = (mouse.radius - distance) / mouse.radius;
-                            let directionX = dx / distance;
-                            let directionY = dy / distance;
-                            this.x -= directionX * force * 4;
-                            this.y -= directionY * force * 4;
-                        } else {
-                            if (this.x !== this.baseX) {
-                                this.x -= (this.x - this.baseX) / 20;
-                            }
-                            if (this.y !== this.baseY) {
-                                this.y -= (this.y - this.baseY) / 20;
-                            }
+                    if (distance < mouse.radius) {
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    } else {
+                        if (this.x !== this.baseX) {
+                            let dx = this.x - this.baseX;
+                            this.x -= dx / 10;
                         }
+                        if (this.y !== this.baseY) {
+                            let dy = this.y - this.baseY;
+                            this.y -= dy / 10;
+                        }
+                    }
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx / 15;
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy / 15;
                     }
                 }
             }
         }
 
-        function init`__`particles() {
-            particles = [];
-            let count = (canvas.width * canvas.height) / 11000;
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle());
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
             }
         }
         initParticles();
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            autoAngle += 0.03;
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
             }
             requestAnimationFrame(animateParticles);
         }
         animateParticles();
 
-        // Управление страницами
+        // Управление страницами (исправлено переключение)
         function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            if(pageId === 'home') document.getElementById('nav-home').classList.add('active');
-            if(pageId === 'contact') document.getElementById('nav-contact').classList.add('active');
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            document.querySelectorAll('.nav-links a').forEach(a => {
+                a.classList.remove('active');
+            });
+            
+            if (pageId === 'home') {
+                const homeNav = document.getElementById('nav-home');
+                if (homeNav) homeNav.classList.add('active');
+            } else if (pageId === 'contact') {
+                const contactNav = document.getElementById('nav-contact');
+                if (contactNav) contactNav.classList.add('active');
+            }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function selectAndGo(serviceName) {
             switchPage('contact');
             const select = document.getElementById('targetService');
-            for(let option of select.options) {
-                if(option.text.includes(serviceName) || option.value === serviceName) {
-                    select.value = option.value;
-                    break;
+            if (select) {
+                for (let option of select.options) {
+                    if (option.text.includes(serviceName) || option.value === serviceName) {
+                        select.value = option.value;
+                        break;
+                    }
                 }
             }
         }
 
-        // Прямая отправка данных в Telegram-бот
+        // Отправка формы в Telegram
         async function submitForm(event) {
             event.preventDefault();
             const service = document.getElementById('targetService').value;
